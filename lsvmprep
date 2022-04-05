@@ -145,6 +145,9 @@ case ${vendor} in
         ;;
     ubuntu)
         ;;
+    opensuse-leap)
+        vendor="opensuse"
+        ;;
     *)
         echo "$0: unsupported vendor distribution: ${vendor}"
         exit 1
@@ -264,6 +267,9 @@ fi
 grub=`ls /boot/efi/EFI/${vendor}/grub*.efi | grep -E "grub(x64)?.efi"`
 if [ "$vendor" = "sles" ]; then
     grub=`ls /boot/efi/EFI/sles/grub.efi`
+fi
+if [ "$vendor" = "opensuse" ]; then
+    grub=`ls /boot/efi/EFI/opensuse/grub.efi`
 fi
 
 if [ ! -x "${grub}" ]; then
@@ -728,6 +734,10 @@ generate_grubcfg()
             local grubcfg=/boot/grub2/grub.cfg
             local mkconfig=grub2-mkconfig
             ;;
+       opensuse)
+            local grubcfg=/boot/grub2/grub.cfg
+            local mkconfig=grub2-mkconfig
+            ;;
 
     esac
 
@@ -790,6 +800,10 @@ generate_initrd()
             chkerr "$?" "$0: $FUNCNAME(): failed to update initrd"
             ;;
         sles)
+            dracut -f --regenerate-all
+            chkerr "$?" "$0: $FUNCNAME(): failed to update initrd"
+            ;;
+        opensuse)
             dracut -f --regenerate-all
             chkerr "$?" "$0: $FUNCNAME(): failed to update initrd"
             ;;
